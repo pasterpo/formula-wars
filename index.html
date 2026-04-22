@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formula Wars | Complete Browser Experience</title>
+    <meta
+      name="description"
+      content="Formula Wars is a full browser experience with a playable math battle prototype, codex, progression, match setup, and system design showcase."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas class="starfield" aria-hidden="true"></canvas>
+
+    <div id="tutorial-modal" class="modal" aria-hidden="true">
+      <div class="modal-card">
+        <button id="close-tutorial" class="modal-close" type="button" aria-label="Close tutorial">
+          x
+        </button>
+        <p class="eyebrow">Quickstart</p>
+        <h2>Formula Wars in one minute</h2>
+        <div class="modal-copy">
+          <p>Movement never stops. Build formulas while dodging, then decide whether to attack now or run for a stronger line.</p>
+          <p>Player 1 uses <code>WASD</code>. Player 2 uses <code>Arrow keys</code>. In CPU mode, the orange player acts automatically.</p>
+          <p>Use the turn console to verify formulas, equip known ones, attack, run, steal, or duplicate physics variables.</p>
+          <p>Physics variables are one-time arena resources. Duplicate them to reserve copies, or consume them directly for mobility effects.</p>
+          <p>Counters matter. Limits answer infinity, diameter breaks pi traps, integrals reverse derivatives, and conjugates answer complex attacks.</p>
+        </div>
+        <div class="modal-actions">
+          <button id="start-playing" class="button button-primary" type="button">Start Playing</button>
+          <button id="dismiss-tutorial" class="button button-secondary" type="button">
+            Hide Tutorial In Future
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="brand-block">
+        <div class="brand-mark">FW</div>
+        <div>
+          <p class="eyebrow">Mathematics becomes combat</p>
+          <h1>Formula Wars</h1>
+        </div>
+      </div>
+
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#overview">Overview</a>
+        <a href="#game">Play</a>
+        <a href="#codex">Codex</a>
+        <a href="#world">World</a>
+        <a href="#progression">Progression</a>
+      </nav>
+    </header>
+
+    <main class="page-shell">
+      <section id="overview" class="hero-section">
+        <div class="hero-copy card">
+          <p class="eyebrow">A complete browser version of the concept</p>
+          <h2>Build formulas. Bend physics. Fight for mathematical control.</h2>
+          <p class="hero-text">
+            This site combines the pitch, the systems, and a live browser prototype of the game loop. It includes match setup, hotseat or CPU play, a formula codex, progression tracking, counters, physics manipulation, and a persistent player profile.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#game">Jump Into the Arena</a>
+            <button id="open-tutorial" class="button button-secondary" type="button">Open Tutorial</button>
+          </div>
+        </div>
+
+        <div class="hero-side">
+          <div id="hero-stats" class="hero-stats"></div>
+          <div class="card principle-card">
+            <p class="eyebrow">Core philosophy</p>
+            <h3>The more math you know, the stronger you become.</h3>
+            <p>
+              Formula Wars is not themed around math. The mathematics itself is the combat system, the movement system, and the counter system.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="game" class="website-section">
+        <div class="section-heading">
+          <p class="eyebrow">Playable game</p>
+          <h2>Local match simulator with a full website shell around it.</h2>
+          <p>
+            Configure a match, play hotseat with two humans or versus a CPU opponent, and use the consoles below to manage formulas, counters, physics, progression, and live tactical guidance.
+          </p>
+        </div>
+
+        <div class="match-controls card">
+          <label class="select-wrap">
+            <span>Mode</span>
+            <select id="mode-select" aria-label="Match mode">
+              <option value="hotseat">Hotseat</option>
+              <option value="cpu">Versus CPU</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span>Start level</span>
+            <select id="start-level" aria-label="Starting level">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6" selected>6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span>Turn timer</span>
+            <select id="turn-duration" aria-label="Turn duration">
+              <option value="10">10s</option>
+              <option value="14" selected>14s</option>
+              <option value="18">18s</option>
+              <option value="22">22s</option>
+            </select>
+          </label>
+
+          <label class="select-wrap">
+            <span>Zone shrink</span>
+            <select id="zone-speed" aria-label="Zone shrink speed">
+              <option value="0.32">Calm</option>
+              <option value="0.45" selected>Standard</option>
+              <option value="0.62">Aggressive</option>
+            </select>
+          </label>
+
+          <div class="button-row">
+            <button id="restart-match" class="button button-primary" type="button">Restart Match</button>
+            <button id="toggle-pause" class="button button-secondary" type="button">Pause</button>
+            <button id="show-tutorial" class="button button-secondary" type="button">Tutorial</button>
+            <button id="reset-profile" class="button button-secondary" type="button">Reset Profile</button>
+          </div>
+        </div>
+
+        <div class="playfield-grid">
+          <aside id="player-a-panel" class="card status-panel" aria-label="Player One status"></aside>
+
+          <section class="card arena-card">
+            <div class="arena-head">
+              <div>
+                <p class="eyebrow">Live arena</p>
+                <h2 id="turn-indicator">Player 1 turn</h2>
+              </div>
+
+              <dl class="arena-metrics">
+                <div>
+                  <dt>Turn timer</dt>
+                  <dd id="turn-timer">14.0s</dd>
+                </div>
+                <div>
+                  <dt>Zone radius</dt>
+                  <dd id="zone-meter">260</dd>
+                </div>
+                <div>
+                  <dt>Distance</dt>
+                  <dd id="distance-meter">0</dd>
+                </div>
+                <div>
+                  <dt>Mode</dt>
+                  <dd id="mode-meter">Hotseat</dd>
+                </div>
+              </dl>
+            </div>
+
+            <div class="canvas-wrap">
+              <canvas id="game-canvas" width="920" height="620" aria-label="Formula Wars game arena"></canvas>
+            </div>
+
+            <div class="arena-footer">
+              <div class="controls-list">
+                <strong>Blue player</strong>
+                <span>P1 movement: WASD</span>
+                <span>Use on-screen controls for formulas and actions.</span>
+              </div>
+              <div class="controls-list">
+                <strong>Orange player</strong>
+                <span>P2 movement: Arrow keys</span>
+                <span>Or switch to CPU mode for solo play.</span>
+              </div>
+              <div class="controls-list">
+                <strong>Battle logic</strong>
+                <span>The void shrinks, retreat loses, and every formula has context.</span>
+              </div>
+            </div>
+          </section>
+
+          <aside id="player-b-panel" class="card status-panel" aria-label="Player Two status"></aside>
+        </div>
+
+        <div class="systems-grid">
+          <section id="turn-console" class="card console-card" aria-label="Turn console"></section>
+          <section id="physics-console" class="card console-card" aria-label="Physics console"></section>
+          <section id="systems-console" class="card console-card" aria-label="Systems reference"></section>
+          <section id="tactical-console" class="card console-card" aria-label="Tactical guidance"></section>
+        </div>
+
+        <div class="bottom-grid">
+          <section class="card log-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Match log</p>
+                <h3>Recent events</h3>
+              </div>
+            </div>
+            <div id="event-log" class="log-list" aria-live="polite"></div>
+          </section>
+
+          <section id="match-summary" class="card log-card" aria-label="Match summary"></section>
+          <section id="quickstart-guide" class="card log-card" aria-label="Quickstart guide"></section>
+        </div>
+      </section>
+
+      <section id="codex" class="website-section">
+        <div class="section-heading">
+          <p class="eyebrow">Formula codex</p>
+          <h2>The full browser build includes a living formula library.</h2>
+          <p>
+            Every formula in this prototype is surfaced here with its tier, unlock level, dependencies, current status, and combat role.
+          </p>
+        </div>
+
+        <div class="codex-grid">
+          <section class="card codex-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Formula list</p>
+                <h3>Playable library</h3>
+              </div>
+            </div>
+            <div id="formula-codex" class="formula-codex"></div>
+          </section>
+
+          <section class="card codex-side">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Build paths</p>
+                <h3>Dependency map</h3>
+              </div>
+            </div>
+            <div id="chain-map" class="chain-map"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="world" class="website-section">
+        <div class="section-heading">
+          <p class="eyebrow">World and systems</p>
+          <h2>The website also explains the fantasy and rules clearly.</h2>
+          <p>
+            The cards below turn the design document into a readable world model, so the site works both as a product presentation and as a playable prototype.
+          </p>
+        </div>
+        <div id="systems-showcase" class="showcase-grid"></div>
+      </section>
+
+      <section id="progression" class="website-section">
+        <div class="section-heading">
+          <p class="eyebrow">Progression and architecture</p>
+          <h2>Campaign unlocks, technical logic, and persistent browser profile.</h2>
+          <p>
+            Progress is saved locally in the browser, the codex updates as formulas are discovered, and the current build exposes the intended technical and progression model.
+          </p>
+        </div>
+
+        <div class="progress-layout">
+          <section class="card progress-card-wide">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Unlock path</p>
+                <h3>Level progression</h3>
+              </div>
+            </div>
+            <div id="progression-showcase" class="progression-showcase"></div>
+          </section>
+
+          <section class="card progress-card-wide">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Tech model</p>
+                <h3>Architecture view</h3>
+              </div>
+            </div>
+            <div id="tech-showcase" class="tech-showcase"></div>
+          </section>
+        </div>
+
+        <section class="card profile-card-wide">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Profile</p>
+              <h3>Persistent browser progress</h3>
+            </div>
+          </div>
+          <div id="profile-showcase" class="profile-showcase"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>Formula Wars concept and design by Rudra.</p>
+      <p>This browser build translates the design into a cohesive playable website.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
